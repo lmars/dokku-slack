@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
+source "$(dirname $0)/../common/functions"
+
+main() {
+  local app="$1"
+  local hook="$(basename $0)"
+  slack_notify "${app}" "${hook}"
+}
+
+slack_notify() {
+  local app="$1"
+  local hook="$2"
+  local file="${DOKKU_ROOT}/${app}/SLACK_WEBHOOK"
+
+  if [[ ! -s "${file}" ]]; then
+    return 0
+  fi
+
+  local webhook="$(cat "${file}")"
+  local payload="$(slack_payload "${app}" "${hook}")"
+
+  dokku_log_info1 "Notifying Slack ..."
+  curl \
+    --request "POST" \
+    --silent \
+    --fail \
+    --show-error \
+    --location \
+    --output "/dev/null" \
+    --header "Content-Type: application/json" \
+    --data "payload=${payload}" \
+    "${webhook}"
+}
+
+slack_payload() {
+  local app="$1"
+  local hook="$2"
+  cat <<JSON
+{
+  "username":   "dokku-slack",
+  "icon_emoji": "neckbeard",
+  "text":       "Dokku deploy ${hook} of ${app}"
+}
+JSON
+}
+
+main $@
