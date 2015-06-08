@@ -30,7 +30,7 @@ slack_notify() {
     --location \
     --output "/dev/null" \
     --header "Content-Type: application/json" \
-    --data "payload=${payload}" \
+    --data "${payload}" \
     "${webhook}"
 }
 
