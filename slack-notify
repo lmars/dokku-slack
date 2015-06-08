@@ -37,11 +37,22 @@ slack_notify() {
 slack_payload() {
   local app="$1"
   local hook="$2"
+
+  local stage
+  case "${hook}" in
+    pre-build-buildstep)
+      stage="Starting"
+      ;;
+    post-deploy)
+      stage="Finished"
+      ;;
+  esac
+
   cat <<JSON
 {
   "username":   "dokku-slack",
   "icon_emoji": "neckbeard",
-  "text":       "Dokku deploy ${hook} of ${app}"
+  "text":       "${stage} deploy of ${app}"
 }
 JSON
 }
