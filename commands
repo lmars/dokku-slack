@@ -22,9 +22,9 @@ main() {
 
 slack_usage() {
   cat >&2 <<USAGE
-slack:enable <app> <webhook>  Enable Slack notifications for app.
-slack:disable <app>           Disable Slack notifications for app.
-slack:info <app>              Print Slack notification settings for app.
+    slack:enable <app> <webhook>                    Enable Slack notifications for app.
+    slack:disable <app>                             Disable Slack notifications for app.
+    slack:info <app>                                Print Slack notification settings for app.
 USAGE
 }
 
