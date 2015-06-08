@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
+source "$(dirname $0)/../common/functions"
+
+main() {
+  case "$1" in
+    slack:enable)
+      slack_enable "$2" "$3"
+      ;;
+    slack:disable)
+      slack_disable "$2"
+      ;;
+    slack:info)
+      slack_info "$2"
+      ;;
+    help)
+      slack_usage
+      ;;
+  esac
+}
+
+slack_usage() {
+  cat >&2 <<USAGE
+slack:enable <app> <webhook>  Enable Slack notifications for app.
+slack:disable <app>           Disable Slack notifications for app.
+slack:info <app>              Print Slack notification settings for app.
+USAGE
+}
+
+slack_enable() {
+  local app="$1"
+  local webhook="$2"
+
+  if [[ -z "${app}" ]] || [[ -z "${webhook}" ]]; then
+    slack_usage
+    exit 1
+  fi
+
+  verify_app_name "${app}"
+
+  dokku_log_info1 "Enabling Slack notifications for ${app}"
+  echo "${webhook}" > "${DOKKU_ROOT}/${app}/SLACK_WEBHOOK"
+}
+
+slack_disable() {
+  local app="$1"
+
+  if [[ -z "${app}" ]]; then
+    slack_usage
+    exit 1
+  fi
+
+  verify_app_name "${app}"
+
+  dokku_log_info1 "Disabling Slack notifications for ${app}"
+  rm -f "${DOKKU_ROOT}/${app}/SLACK_WEBHOOK"
+}
+
+slack_info() {
+  local app="$1"
+
+  if [[ -z "${app}" ]]; then
+    slack_usage
+    exit 1
+  fi
+
+  verify_app_name "${app}"
+
+  local file="${DOKKU_ROOT}/${app}/SLACK_WEBHOOK"
+  if [[ -s "${file}" ]]; then
+    dokku_log_info1 "Slack notifications enabled for ${app} (webhook: $(cat "${file}"))"
+  else
+    dokku_log_info1 "Slack notifications disabled for ${app}"
+  fi
+}
+
+main $@
