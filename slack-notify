@@ -51,7 +51,7 @@ slack_payload() {
   cat <<JSON
 {
   "username":   "dokku-slack",
-  "icon_emoji": "neckbeard",
+  "icon_emoji": ":neckbeard:",
   "text":       "${stage} deploy of ${app}"
 }
 JSON
