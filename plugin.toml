@@ -1,0 +1,6 @@
+[plugin]
+name = "dokku-slack"
+description = "Dokku plugin to notify a Slack room on deployment"
+version = "0.1.0"
+website_url = "https://github.com/lmars/dokku-slack"
+[plugin.config]
